@@ -112,6 +112,29 @@ public:
     void print() const;
 };
 
+DiningHall:: DiningHall(int hall_id, string name, string address, int capacity): hall_id(hall_id), name(name), address(address), capacity(capacity) {}
+
+int DiningHall:: get_hall_id() const {return hall_id;}
+string DiningHall:: get_name() const {return name;}
+string DiningHall:: get_address() const {return address;}
+int DiningHall:: get_capacity() const {return capacity;}
+
+void DiningHall:: set_hall_id(int id) {hall_id = id;}
+void DiningHall:: set_name(const string& name) {this->name = name;}
+void DiningHall:: set_address(const string& address) {this->address = address;}
+void DiningHall:: set_capacity(int capacity) {this->capacity = capacity;}
+
+void DiningHall:: print() const
+{
+    cout << "DiningHall Info:\n";
+    cout << "hall_id: " << hall_id << endl;
+    cout << "name: " << name << endl;
+    cout << "address: " << address << endl;
+    cout << "capacity: " << capacity << endl;
+}
+
+
+
 int main()
 {
     return 0;
