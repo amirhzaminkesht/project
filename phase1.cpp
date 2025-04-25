@@ -133,7 +133,29 @@ void DiningHall:: print() const
     cout << "capacity: " << capacity << endl;
 }
 
+Meal:: Meal(int meal_id, string name, float price, MealType meal_type): meal_id(meal_id), name(name), price(price), meal_type(meal_type) {}
 
+int Meal:: get_meal_id() const {return meal_id;}
+string Meal:: get_name() const {return name;}
+float Meal:: get_price() const {return price;}
+MealType Meal:: get_meal_type() const {return meal_type;}
+vector<string> Meal:: get_side_items() const {return side_items;}
+
+void Meal:: set_meal_id(int id) {meal_id = id;}
+void Meal:: set_name(const string& name) {this->name = name;}
+void Meal:: set_price(float price) {this->price = price;}
+void Meal:: set_meal_type(MealType meal_type) {this->meal_type = meal_type;}
+
+void Meal:: update_price(float new_price) {price = new_price;}
+void Meal:: add_side_item(const string& item) {side_items.push_back(item);}
+
+void Meal:: print() const
+{
+    cout << "Meal Info:\n";
+    cout << "meal_id: " << meal_id << endl;
+    cout << "name: " << name << endl;
+    cout << "price: " << price << endl;
+}
 
 int main()
 {
