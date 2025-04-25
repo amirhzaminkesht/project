@@ -197,6 +197,78 @@ void Reservation:: print() const
     cout << "status: " << (status == ReservationStatus:: SUCCESS? "SUCCESS": "CANCELLED") << endl;
 }
 
+Student:: Student(int user_id, string student_id, string name, string email, float balance, bool is_active): user_id(user_id), student_id(student_id), name(name), email(email), balance(balance), is_active(is_active) {}
+
+int Student:: get_user_id() const {return user_id;}
+string Student:: get_student_id() const {return student_id;}
+string Student:: get_name() const {return name;}
+string Student:: get_email() const {return email;}
+float Student:: get_balance() const {return balance;}
+bool Student:: get_is_active() const {return is_active;}
+vector<Reservation*>& Student:: get_reservations() {return reservations;}
+
+void Student:: set_user_id(int id) {user_id = id;}
+void Student:: set_student_id(const string& id) {student_id = id;}
+void Student:: set_name(const string& name) {this->name = name;}
+void Student:: set_email(const string& email) {this->email = email;}
+void Student:: set_balance(float balance) {this->balance = balance;}
+void Student:: set_is_active(bool is_active) {this->is_active = is_active;}
+
+void Student:: reserve_meal(Meal *meal, DiningHall *dininghall)
+{
+    time_t now = time(nullptr);
+    tm *now_tm = localtime(&now);
+    
+    for(Reservation *res : reservations)
+    {
+        tm *res_tm = localtime(&(res->get_created_at()));
+        if((now_tm->tm_year == res_tm->tm_year) && (now_tm->tm_mon == res_tm->tm_mon) && (now_tm->tm_mday == res_tm->tm_mday))
+        {
+            if(res->get_meal()->get_meal_type() == meal->get_meal_type())
+            {
+                cout << "Error: You have already reserved a meal for this period today.\n";
+                return;
+            }
+        }
+    }
+    
+    if(balance < meal->get_price())
+    {
+        cout << "Error: Insufficient balance to reserve this meal.\n";
+        return;
+    }
+    
+    balance -= meal->get_price();
+    
+    int new_reservation_id = generateReservationId();
+    Reservation *newReservation = new Reservation(new_reservation_id, this, dininghall, meal);
+    reservations.push_back(newReservation);
+    
+    cout << "Reservation successful!\n";
+    newReservation->print();
+}
+
+bool Student:: cancel_reservation(int index)
+{
+    if(index < 0 || index >= static_cast<int>(reservations.size()))
+    {
+        cout << "Error: Invalid reservation index.\n";
+        return false;
+    }
+    bool success = reservations[index]->cancel();
+    return success;
+}
+
+void Student:: print() const
+{
+    cout << "Student Info:\n";
+    cout << "Student ID: " << student_id << "\n";
+    cout << "Name: " << name << "\n";
+    cout << "Email: " << email << "\n";
+    cout << "Balance: " << balance << "\n";
+}
+
+
 int main()
 {
     return 0;
