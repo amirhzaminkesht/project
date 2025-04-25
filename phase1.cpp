@@ -157,10 +157,26 @@ void Meal:: print() const
     cout << "price: " << price << endl;
 }
 
+int generateReservationId()
+{
+    static int id_counter = 1;
+    return id_counter++;
+}
+
 Reservation:: Reservation(int reservation_id, Student *student, DiningHall *dHall, Meal *meal): reservation_id(reservation_id), student(student), dHall(dHall), meal(meal), status(ReservationStatus:: SUCCESS)
 {
     created_at = time(nullptr);
 }
+
+int Reservation:: get_reservation_id() const {return reservation_id;}
+Student *Reservation:: get_student() const {return student;}
+DiningHall *Reservation:: get_dHall() const {return dHall;}
+Meal *Reservation:: get_meal() const {return meal;}
+ReservationStatus Reservation:: get_status() const {return status;}
+time_t Reservation:: get_created_at() const {return created_at;}
+
+void Reservation:: set_reservation_id(int id) {reservation_id = id;}
+void Reservation:: set_status(ReservationStatus status) {this->status = status;}
 
 bool Reservation:: cancel()
 {
