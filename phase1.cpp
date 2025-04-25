@@ -157,6 +157,30 @@ void Meal:: print() const
     cout << "price: " << price << endl;
 }
 
+Reservation:: Reservation(int reservation_id, Student *student, DiningHall *dHall, Meal *meal): reservation_id(reservation_id), student(student), dHall(dHall), meal(meal), status(ReservationStatus:: SUCCESS)
+{
+    created_at = time(nullptr);
+}
+
+bool Reservation:: cancel()
+{
+    if(status == ReservationStatus:: CANCELLED)
+    {
+        cout << "Error: Reservation already cancelled.\n";
+        return false;
+    }
+    status = ReservationStatus:: CANCELLED;
+    cout << "Reservation cancelled successfully.\n";
+    return true;
+}
+
+void Reservation:: print() const
+{
+    cout << "Reservation Info:\n";
+    cout << "reservation_id: " << reservation_id << endl;
+    cout << "status: " << (status == ReservationStatus:: SUCCESS? "SUCCESS": "CANCELLED") << endl;
+}
+
 int main()
 {
     return 0;
