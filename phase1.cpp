@@ -189,7 +189,8 @@ void Student:: reserve_meal(Meal *meal, DiningHall *dininghall)
     
     for(Reservation *res : reservations)
     {
-        tm *res_tm = localtime(&(res->get_created_at()));
+        time_t res_created = res->get_created_at();
+        tm *res_tm = localtime(&res_created);
         if((now_tm->tm_year == res_tm->tm_year) && (now_tm->tm_mon == res_tm->tm_mon) && (now_tm->tm_mday == res_tm->tm_mday))
         {
             if(res->get_meal()->get_meal_type() == meal->get_meal_type())
@@ -279,7 +280,7 @@ int main()
     Meal breakfast(101, "Butter", 6000, MealType:: BREAKFAST);
     Meal lunch(102, "Kebab", 15000, MealType:: LUNCH);
 
-    Student student1(1, "S12345", "Amir", "amir@example.com", 20.0, true);
+    Student student1(1, "S12345", "Amir", "amir@example.com", 100.0, true);
 
     student1.reserve_meal(&breakfast, &hall1);
 
