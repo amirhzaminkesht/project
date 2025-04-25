@@ -7,6 +7,56 @@ using namespace std;
 enum class MealType {BREAKFAST, LUNCH, DINNER};
 enum class ReservationStatus {SUCCESS, CANCELLED, FAILED};
 
+class Meal
+{
+    int meal_id;
+    string name;
+    float price;
+    MealType meal_type;
+    vector<string> side_items;
+public:
+    Meal(int meal_id, string name, float price, MealType meal_type);
+    
+    int get_meal_id() const;
+    string get_name() const;
+    float get_price() const;
+    MealType get_meal_type() const;
+    vector<string> get_side_items() const;
+    
+    void set_meal_id(int id);
+    void set_name(const string &name);
+    void set_price(float price);
+    void set_meal_type(MealType meal_type);
+
+    void update_price(float new_price);
+    void add_side_item(const string& item);
+    void print() const;
+};
+
+class DiningHall
+{
+    int hall_id;
+    string name;
+    string address;
+    int capacity;
+public:
+    DiningHall(int hall_id, string name, string address, int capacity);
+
+    int get_hall_id() const;
+    string get_name() const;
+    string get_address() const;
+    int get_capacity() const;
+    
+    void set_hall_id(int id);
+    void set_name(const string& name);
+    void set_address(const string& address);
+    void set_capacity(int capacity);
+    
+    void print() const;
+};
+
+class Reservation;
+
 class Student
 {
     int user_id;
@@ -64,75 +114,6 @@ public:
     void print() const;
 };
 
-class Meal
-{
-    int meal_id;
-    string name;
-    float price;
-    MealType meal_type;
-    vector<string> side_items;
-public:
-    Meal(int meal_id, string name, float price, MealType meal_type);
-    
-    int get_meal_id() const;
-    string get_name() const;
-    float get_price() const;
-    MealType get_meal_type() const;
-    vector<string> get_side_items() const;
-    
-    void set_meal_id(int id);
-    void set_name(const string &name);
-    void set_price(float price);
-    void set_meal_type(MealType meal_type);
-
-    void update_price(float new_price);
-    void add_side_item(const string& item);
-    void print() const;
-};
-
-class DiningHall
-{
-    int hall_id;
-    string name;
-    string address;
-    int capacity;
-public:
-    DiningHall(int hall_id, string name, string address, int capacity);
-
-    int get_hall_id() const;
-    string get_name() const;
-    string get_address() const;
-    int get_capacity() const;
-    
-    void set_hall_id(int id);
-    void set_name(const string& name);
-    void set_address(const string& address);
-    void set_capacity(int capacity);
-    
-    void print() const;
-};
-
-DiningHall:: DiningHall(int hall_id, string name, string address, int capacity): hall_id(hall_id), name(name), address(address), capacity(capacity) {}
-
-int DiningHall:: get_hall_id() const {return hall_id;}
-string DiningHall:: get_name() const {return name;}
-string DiningHall:: get_address() const {return address;}
-int DiningHall:: get_capacity() const {return capacity;}
-
-void DiningHall:: set_hall_id(int id) {hall_id = id;}
-void DiningHall:: set_name(const string& name) {this->name = name;}
-void DiningHall:: set_address(const string& address) {this->address = address;}
-void DiningHall:: set_capacity(int capacity) {this->capacity = capacity;}
-
-void DiningHall:: print() const
-{
-    cout << "DiningHall Info:\n";
-    cout << "hall_id: " << hall_id << endl;
-    cout << "name: " << name << endl;
-    cout << "address: " << address << endl;
-    cout << "capacity: " << capacity << endl;
-}
-
 Meal:: Meal(int meal_id, string name, float price, MealType meal_type): meal_id(meal_id), name(name), price(price), meal_type(meal_type) {}
 
 int Meal:: get_meal_id() const {return meal_id;}
@@ -163,38 +144,25 @@ int generateReservationId()
     return id_counter++;
 }
 
-Reservation:: Reservation(int reservation_id, Student *student, DiningHall *dHall, Meal *meal): reservation_id(reservation_id), student(student), dHall(dHall), meal(meal), status(ReservationStatus:: SUCCESS)
+DiningHall:: DiningHall(int hall_id, string name, string address, int capacity): hall_id(hall_id), name(name), address(address), capacity(capacity) {}
+
+int DiningHall:: get_hall_id() const {return hall_id;}
+string DiningHall:: get_name() const {return name;}
+string DiningHall:: get_address() const {return address;}
+int DiningHall:: get_capacity() const {return capacity;}
+
+void DiningHall:: set_hall_id(int id) {hall_id = id;}
+void DiningHall:: set_name(const string& name) {this->name = name;}
+void DiningHall:: set_address(const string& address) {this->address = address;}
+void DiningHall:: set_capacity(int capacity) {this->capacity = capacity;}
+
+void DiningHall:: print() const
 {
-    created_at = time(nullptr);
-}
-
-int Reservation:: get_reservation_id() const {return reservation_id;}
-Student *Reservation:: get_student() const {return student;}
-DiningHall *Reservation:: get_dHall() const {return dHall;}
-Meal *Reservation:: get_meal() const {return meal;}
-ReservationStatus Reservation:: get_status() const {return status;}
-time_t Reservation:: get_created_at() const {return created_at;}
-
-void Reservation:: set_reservation_id(int id) {reservation_id = id;}
-void Reservation:: set_status(ReservationStatus status) {this->status = status;}
-
-bool Reservation:: cancel()
-{
-    if(status == ReservationStatus:: CANCELLED)
-    {
-        cout << "Error: Reservation already cancelled.\n";
-        return false;
-    }
-    status = ReservationStatus:: CANCELLED;
-    cout << "Reservation cancelled successfully.\n";
-    return true;
-}
-
-void Reservation:: print() const
-{
-    cout << "Reservation Info:\n";
-    cout << "reservation_id: " << reservation_id << endl;
-    cout << "status: " << (status == ReservationStatus:: SUCCESS? "SUCCESS": "CANCELLED") << endl;
+    cout << "DiningHall Info:\n";
+    cout << "hall_id: " << hall_id << endl;
+    cout << "name: " << name << endl;
+    cout << "address: " << address << endl;
+    cout << "capacity: " << capacity << endl;
 }
 
 Student:: Student(int user_id, string student_id, string name, string email, float balance, bool is_active): user_id(user_id), student_id(student_id), name(name), email(email), balance(balance), is_active(is_active) {}
@@ -268,8 +236,62 @@ void Student:: print() const
     cout << "Balance: " << balance << "\n";
 }
 
+Reservation:: Reservation(int reservation_id, Student *student, DiningHall *dHall, Meal *meal): reservation_id(reservation_id), student(student), dHall(dHall), meal(meal), status(ReservationStatus:: SUCCESS)
+{
+    created_at = time(nullptr);
+}
+
+int Reservation:: get_reservation_id() const {return reservation_id;}
+Student *Reservation:: get_student() const {return student;}
+DiningHall *Reservation:: get_dHall() const {return dHall;}
+Meal *Reservation:: get_meal() const {return meal;}
+ReservationStatus Reservation:: get_status() const {return status;}
+time_t Reservation:: get_created_at() const {return created_at;}
+
+void Reservation:: set_reservation_id(int id) {reservation_id = id;}
+void Reservation:: set_status(ReservationStatus status) {this->status = status;}
+
+bool Reservation:: cancel()
+{
+    if(status == ReservationStatus:: CANCELLED)
+    {
+        cout << "Error: Reservation already cancelled.\n";
+        return false;
+    }
+    status = ReservationStatus:: CANCELLED;
+    cout << "Reservation cancelled successfully.\n";
+    return true;
+}
+
+void Reservation:: print() const
+{
+    cout << "Reservation Info:\n";
+    cout << "reservation_id: " << reservation_id << endl;
+    cout << "status: " << (status == ReservationStatus:: SUCCESS? "SUCCESS": "CANCELLED") << endl;
+}
 
 int main()
 {
+    cout << "Meal Reservation System Running!\n";
+
+    DiningHall hall1(1, "Omid", "4th Avenue, Birjand University, Birjand", 500);
+
+    Meal breakfast(101, "Butter", 6000, MealType:: BREAKFAST);
+    Meal lunch(102, "Kebab", 15000, MealType:: LUNCH);
+
+    Student student1(1, "S12345", "Amir", "amir@example.com", 20.0, true);
+
+    student1.reserve_meal(&breakfast, &hall1);
+
+    student1.reserve_meal(&breakfast, &hall1);
+
+    student1.reserve_meal(&lunch, &hall1);
+
+    cout << "\n--- Final Student Information ---\n";
+    student1.print();
+
+    cout << "\nCancelling first reservation...\n";
+    student1.cancel_reservation(0);
+    
     return 0;
 }
