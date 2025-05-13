@@ -27,6 +27,13 @@ public:
     virtual void print() const;
 };
 
+class Admin : public User
+{
+public:
+    Admin(int userID, string name, string lastName, string hashedPassword);
+    void print() const override;
+};
+
 class Meal
 {
     int meal_id;
@@ -144,6 +151,13 @@ void User:: print() const
 {
     cout << "User Info:\n";
     cout << "Name: " << _name << " " << _lastName << endl;
+}
+
+Admin:: Admin(int userID, string name, string lastName, string hashedPassword): User(userID, name, lastName, hashedPassword) {}
+
+void Admin:: print() const
+{
+    cout << "Admin: " << get_name() << " " << get_last_name() << endl;
 }
 
 Meal:: Meal(int meal_id, string name, float price, MealType meal_type): meal_id(meal_id), name(name), price(price), meal_type(meal_type) {}
@@ -310,12 +324,14 @@ int main()
     Meal lunch(102, "Kebab", 15000, MealType:: LUNCH);
 
     Student student1(1, "Amir", "Karimi", "hashed_pass", "S12345", "amir@example.com", 100.0, true);
+    Admin admin1(2, "Sara", "Moradi", "hashed_admin");
 
     student1.reserve_meal(&breakfast, &hall1);
     student1.reserve_meal(&breakfast, &hall1);
     student1.reserve_meal(&lunch, &hall1);
 
     student1.print();
+    admin1.print();
 
     student1.cancel_reservation(0);
 
