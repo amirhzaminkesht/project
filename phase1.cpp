@@ -77,36 +77,30 @@ public:
 
 class Reservation;
 
-class Student
+class Student : public User
 {
-    int user_id;
     string student_id;
-    string name;
     string email;
     float balance;
     bool is_active;
     vector<Reservation*> reservations;
 public:
-    Student(int user_id, string student_id, string name, string email, float balance, bool is_active);
+    Student(int userID, string name, string lastName, string hashedPassword, string student_id, string email, float balance, bool is_active);
 
-    int get_user_id() const;
     string get_student_id() const;
-    string get_name() const;
     string get_email() const;
     float get_balance() const;
     bool get_is_active() const;
     vector<Reservation*>& get_reservations();
 
-    void set_user_id(int id);
     void set_student_id(const string& id);
-    void set_name(const string& name);
     void set_email(const string& email);
     void set_balance(float balance);
     void set_is_active(bool is_active);
 
     void reserve_meal(Meal *meal, DiningHall *dininghall);
     bool cancel_reservation(int index);
-    void print() const;
+    void print() const override;
 };
 
 class Reservation
@@ -203,19 +197,16 @@ void DiningHall:: print() const
     cout << "capacity: " << capacity << endl;
 }
 
-Student:: Student(int user_id, string student_id, string name, string email, float balance, bool is_active): user_id(user_id), student_id(student_id), name(name), email(email), balance(balance), is_active(is_active) {}
+Student:: Student(int userID, string name, string lastName, string hashedPassword, string student_id, string email, float balance, bool is_active)
+    : User(userID, name, lastName, hashedPassword), student_id(student_id), email(email), balance(balance), is_active(is_active) {}
 
-int Student:: get_user_id() const {return user_id;}
 string Student:: get_student_id() const {return student_id;}
-string Student:: get_name() const {return name;}
 string Student:: get_email() const {return email;}
 float Student:: get_balance() const {return balance;}
 bool Student:: get_is_active() const {return is_active;}
 vector<Reservation*>& Student:: get_reservations() {return reservations;}
 
-void Student:: set_user_id(int id) {user_id = id;}
 void Student:: set_student_id(const string& id) {student_id = id;}
-void Student:: set_name(const string& name) {this->name = name;}
 void Student:: set_email(const string& email) {this->email = email;}
 void Student:: set_balance(float balance) {this->balance = balance;}
 void Student:: set_is_active(bool is_active) {this->is_active = is_active;}
@@ -269,10 +260,10 @@ bool Student:: cancel_reservation(int index)
 void Student:: print() const
 {
     cout << "Student Info:\n";
-    cout << "Student ID: " << student_id << "\n";
-    cout << "Name: " << name << "\n";
-    cout << "Email: " << email << "\n";
-    cout << "Balance: " << balance << "\n";
+    cout << "Name: " << get_name() << " " << get_last_name() << endl;
+    cout << "Student ID: " << student_id << endl;
+    cout << "Email: " << email << endl;
+    cout << "Balance: " << balance << endl;
 }
 
 Reservation:: Reservation(int reservation_id, Student *student, DiningHall *dHall, Meal *meal): reservation_id(reservation_id), student(student), dHall(dHall), meal(meal), status(ReservationStatus:: SUCCESS)
@@ -318,18 +309,14 @@ int main()
     Meal breakfast(101, "Butter", 6000, MealType:: BREAKFAST);
     Meal lunch(102, "Kebab", 15000, MealType:: LUNCH);
 
-    Student student1(1, "S12345", "Amir", "amir@example.com", 100.0, true);
+    Student student1(1, "Amir", "Karimi", "hashed_pass", "S12345", "amir@example.com", 100.0, true);
 
     student1.reserve_meal(&breakfast, &hall1);
-
     student1.reserve_meal(&breakfast, &hall1);
-
     student1.reserve_meal(&lunch, &hall1);
 
-    cout << "\n--- Final Student Information ---\n";
     student1.print();
 
-    cout << "\nCancelling first reservation...\n";
     student1.cancel_reservation(0);
 
     return 0;
