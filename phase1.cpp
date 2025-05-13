@@ -36,24 +36,30 @@ public:
 
 class Meal
 {
-    int meal_id;
-    string name;
-    float price;
-    MealType meal_type;
-    vector<string> side_items;
+    int _mealID;
+    string _name;
+    float _price;
+    bool _isActive;
+    MealType _mealType;
+    ReserveDay _reserveDay;
+    vector<string> _sideItems;
 public:
-    Meal(int meal_id, string name, float price, MealType meal_type);
+    Meal(int mealID, string name, float price, MealType mealType, ReserveDay reserveDay);
 
     int get_meal_id() const;
     string get_name() const;
     float get_price() const;
+    bool get_is_active() const;
     MealType get_meal_type() const;
+    ReserveDay get_reserve_day() const;
     vector<string> get_side_items() const;
 
     void set_meal_id(int id);
     void set_name(const string &name);
     void set_price(float price);
     void set_meal_type(MealType meal_type);
+    void set_reserve_day(ReserveDay day);
+    void set_is_active(bool active);
 
     void update_price(float new_price);
     void add_side_item(const string& item);
@@ -160,28 +166,34 @@ void Admin:: print() const
     cout << "Admin: " << get_name() << " " << get_last_name() << endl;
 }
 
-Meal:: Meal(int meal_id, string name, float price, MealType meal_type): meal_id(meal_id), name(name), price(price), meal_type(meal_type) {}
+Meal:: Meal(int mealID, string name, float price, MealType mealType, ReserveDay reserveDay)
+    : _mealID(mealID), _name(name), _price(price), _mealType(mealType), _reserveDay(reserveDay), _isActive(true) {}
 
-int Meal:: get_meal_id() const {return meal_id;}
-string Meal:: get_name() const {return name;}
-float Meal:: get_price() const {return price;}
-MealType Meal:: get_meal_type() const {return meal_type;}
-vector<string> Meal:: get_side_items() const {return side_items;}
+int Meal:: get_meal_id() const {return _mealID;}
+string Meal:: get_name() const {return _name;}
+float Meal:: get_price() const {return _price;}
+bool Meal:: get_is_active() const {return _isActive;}
+MealType Meal:: get_meal_type() const {return _mealType;}
+ReserveDay Meal:: get_reserve_day() const {return _reserveDay;}
+vector<string> Meal:: get_side_items() const {return _sideItems;}
 
-void Meal:: set_meal_id(int id) {meal_id = id;}
-void Meal:: set_name(const string& name) {this->name = name;}
-void Meal:: set_price(float price) {this->price = price;}
-void Meal:: set_meal_type(MealType meal_type) {this->meal_type = meal_type;}
+void Meal:: set_meal_id(int id) {_mealID = id;}
+void Meal:: set_name(const string& name) {_name = name;}
+void Meal:: set_price(float price) {_price = price;}
+void Meal:: set_meal_type(MealType meal_type) {_mealType = meal_type;}
+void Meal:: set_reserve_day(ReserveDay day) {_reserveDay = day;}
+void Meal:: set_is_active(bool active) {_isActive = active;}
 
-void Meal:: update_price(float new_price) {price = new_price;}
-void Meal:: add_side_item(const string& item) {side_items.push_back(item);}
+void Meal:: update_price(float new_price) {_price = new_price;}
+void Meal:: add_side_item(const string& item) {_sideItems.push_back(item);}
 
 void Meal:: print() const
 {
     cout << "Meal Info:\n";
-    cout << "meal_id: " << meal_id << endl;
-    cout << "name: " << name << endl;
-    cout << "price: " << price << endl;
+    cout << "meal_id: " << _mealID << endl;
+    cout << "name: " << _name << endl;
+    cout << "price: " << _price << endl;
+    cout << "is_active: " << (_isActive ? "true" : "false") << endl;
 }
 
 int generateReservationId()
@@ -316,24 +328,21 @@ void Reservation:: print() const
 
 int main()
 {
-    cout << "Meal Reservation System Running!\n";
+    DiningHall hall1(1, "Omid", "Birjand University", 500);
+    Meal lunch(101, "Kebab", 15000, MealType::LUNCH, ReserveDay::MONDAY);
 
-    DiningHall hall1(1, "Omid", "4th Avenue, Birjand University, Birjand", 500);
-
-    Meal breakfast(101, "Butter", 6000, MealType:: BREAKFAST);
-    Meal lunch(102, "Kebab", 15000, MealType:: LUNCH);
-
-    Student student1(1, "Amir", "Karimi", "hashed_pass", "S12345", "amir@example.com", 100.0, true);
+    Student student1(1, "Amir", "Karimi", "hashed_pass", "S12345", "amir@example.com", 20000.0, true);
     Admin admin1(2, "Sara", "Moradi", "hashed_admin");
 
-    student1.reserve_meal(&breakfast, &hall1);
-    student1.reserve_meal(&breakfast, &hall1);
     student1.reserve_meal(&lunch, &hall1);
-
     student1.print();
     admin1.print();
 
-    student1.cancel_reservation(0);
+    if (!student1.get_reservations().empty())
+    {
+        student1.get_reservations()[0]->cancel();
+        student1.get_reservations()[0]->print();
+    }
 
     return 0;
 }
