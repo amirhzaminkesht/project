@@ -8,6 +8,25 @@ enum class MealType {BREAKFAST, LUNCH, DINNER};
 enum class ReserveDay {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY};
 enum class ReservationStatus {SUCCESS, CANCELLED, FAILED};
 
+class User
+{
+    int _userID;
+    string _name;
+    string _lastName;
+    string _hashedPassword;
+public:
+    User(int userID, string name, string lastName, string hashedPassword);
+    int get_user_id() const;
+    string get_name() const;
+    string get_last_name() const;
+    string get_hashed_password() const;
+    void set_user_id(int id);
+    void set_name(const string& name);
+    void set_last_name(const string& lastName);
+    void set_hashed_password(const string& password);
+    virtual void print() const;
+};
+
 class Meal
 {
     int meal_id;
@@ -114,6 +133,24 @@ public:
     bool cancel();
     void print() const;
 };
+
+User:: User(int userID, string name, string lastName, string hashedPassword): _userID(userID), _name(name), _lastName(lastName), _hashedPassword(hashedPassword) {}
+
+int User:: get_user_id() const {return _userID;}
+string User:: get_name() const {return _name;}
+string User:: get_last_name() const {return _lastName;}
+string User:: get_hashed_password() const {return _hashedPassword;}
+
+void User:: set_user_id(int id) {_userID = id;}
+void User:: set_name(const string& name) {_name = name;}
+void User:: set_last_name(const string& lastName) {_lastName = lastName;}
+void User:: set_hashed_password(const string& password) {_hashedPassword = password;}
+
+void User:: print() const
+{
+    cout << "User Info:\n";
+    cout << "Name: " << _name << " " << _lastName << endl;
+}
 
 Meal:: Meal(int meal_id, string name, float price, MealType meal_type): meal_id(meal_id), name(name), price(price), meal_type(meal_type) {}
 
