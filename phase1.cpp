@@ -63,6 +63,8 @@ public:
 
     void update_price(float new_price);
     void add_side_item(const string& item);
+    void activate();
+    void deactivate();
     void print() const;
 };
 
@@ -186,6 +188,8 @@ void Meal:: set_is_active(bool active) {_isActive = active;}
 
 void Meal:: update_price(float new_price) {_price = new_price;}
 void Meal:: add_side_item(const string& item) {_sideItems.push_back(item);}
+void Meal:: activate() {_isActive = true;}
+void Meal:: deactivate() {_isActive = false;}
 
 void Meal:: print() const
 {
@@ -193,7 +197,7 @@ void Meal:: print() const
     cout << "meal_id: " << _mealID << endl;
     cout << "name: " << _name << endl;
     cout << "price: " << _price << endl;
-    cout << "is_active: " << (_isActive ? "true" : "false") << endl;
+    cout << "active: " << (_isActive ? "Yes" : "No") << endl;
 }
 
 int generateReservationId()
@@ -333,6 +337,9 @@ int main()
 
     Student student1(1, "Amir", "Karimi", "hashed_pass", "S12345", "amir@example.com", 20000.0, true);
     Admin admin1(2, "Sara", "Moradi", "hashed_admin");
+
+    lunch.deactivate();
+    lunch.print();
 
     student1.reserve_meal(&lunch, &hall1);
     student1.print();
