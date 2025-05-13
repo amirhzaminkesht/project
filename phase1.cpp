@@ -34,6 +34,23 @@ public:
     void print() const override;
 };
 
+class Meal;
+class DiningHall;
+
+class Storage
+{
+    static Storage* _instance;
+    vector<Meal*> _meals;
+    vector<DiningHall*> _diningHalls;
+    Storage();
+public:
+    static Storage& get_instance();
+    void add_meal(Meal* meal);
+    void add_dining_hall(DiningHall* hall);
+    vector<Meal*>& get_meals();
+    vector<DiningHall*>& get_dining_halls();
+};
+
 class Meal
 {
     int _mealID;
@@ -137,6 +154,36 @@ int generateReservationId()
     return id++;
 }
 
+Storage* Storage::_instance = nullptr;
+
+Storage::Storage() {}
+
+Storage& Storage::get_instance()
+{
+    static Storage instance;
+    return instance;
+}
+
+void Storage::add_meal(Meal* meal)
+{
+    _meals.push_back(meal);
+}
+
+void Storage::add_dining_hall(DiningHall* hall)
+{
+    _diningHalls.push_back(hall);
+}
+
+vector<Meal*>& Storage::get_meals()
+{
+    return _meals;
+}
+
+vector<DiningHall*>& Storage::get_dining_halls()
+{
+    return _diningHalls;
+}
+
 User::User(int userID, string name, string lastName, string hashedPassword): _userID(userID), _name(name), _lastName(lastName), _hashedPassword(hashedPassword) {}
 int User::get_user_id() const { return _userID; }
 string User::get_name() const { return _name; }
@@ -203,6 +250,33 @@ void DiningHall::print() const
     cout << "capacity: " << _capacity << endl;
 }
 
+Reservation::Reservation(int reservationID, Student* student, DiningHall* dHall, Meal* meal): _reservationID(reservationID), _student(student), _dHall(dHall), _meal(meal), _status(ReservationStatus::SUCCESS), _createdAt(time(nullptr)) {}
+int Reservation::get_reservation_id() const { return _reservationID; }
+Student* Reservation::get_student() const { return _student; }
+DiningHall* Reservation::get_dHall() const { return _dHall; }
+Meal* Reservation::get_meal() const { return _meal; }
+ReservationStatus Reservation::get_status() const { return _status; }
+time_t Reservation::get_created_at() const { return _createdAt; }
+void Reservation::set_reservation_id(int id) { _reservationID = id; }
+void Reservation::set_status(ReservationStatus status) { _status = status; }
+bool Reservation::cancel()
+{
+    if (_status == ReservationStatus::CANCELLED)
+    {
+        cout << "Error: Reservation already cancelled.\n";
+        return false;
+    }
+    _status = ReservationStatus::CANCELLED;
+    cout << "Reservation cancelled successfully.\n";
+    return true;
+}
+void Reservation::print() const
+{
+    cout << "Reservation Info:\n";
+    cout << "reservation_id: " << _reservationID << endl;
+    cout << "status: " << (_status == ReservationStatus::SUCCESS ? "SUCCESS" : "CANCELLED") << endl;
+}
+
 Student::Student(int userID, string name, string lastName, string hashedPassword, string studentID, string email, float balance, bool isActive): User(userID, name, lastName, hashedPassword), _studentID(studentID), _email(email), _balance(balance), _isActive(isActive) {}
 string Student::get_student_id() const { return _studentID; }
 string Student::get_email() const { return _email; }
@@ -260,44 +334,17 @@ void Student::print() const
     cout << "Balance: " << _balance << endl;
 }
 
-Reservation::Reservation(int reservationID, Student* student, DiningHall* dHall, Meal* meal): _reservationID(reservationID), _student(student), _dHall(dHall), _meal(meal), _status(ReservationStatus::SUCCESS)
-{
-    _createdAt = time(nullptr);
-}
-int Reservation::get_reservation_id() const { return _reservationID; }
-Student* Reservation::get_student() const { return _student; }
-DiningHall* Reservation::get_dHall() const { return _dHall; }
-Meal* Reservation::get_meal() const { return _meal; }
-ReservationStatus Reservation::get_status() const { return _status; }
-time_t Reservation::get_created_at() const { return _createdAt; }
-void Reservation::set_reservation_id(int id) { _reservationID = id; }
-void Reservation::set_status(ReservationStatus status) { _status = status; }
-bool Reservation::cancel()
-{
-    if (_status == ReservationStatus::CANCELLED)
-    {
-        cout << "Error: Reservation already cancelled.\n";
-        return false;
-    }
-    _status = ReservationStatus::CANCELLED;
-    cout << "Reservation cancelled successfully.\n";
-    return true;
-}
-void Reservation::print() const
-{
-    cout << "Reservation Info:\n";
-    cout << "reservation_id: " << _reservationID << endl;
-    cout << "status: " << (_status == ReservationStatus::SUCCESS ? "SUCCESS" : "CANCELLED") << endl;
-}
-
 int main()
 {
-    DiningHall hall(1, "Omid Hall", "Birjand University", 300);
-    Meal lunch(101, "Kebab", 20000, MealType::LUNCH, ReserveDay::MONDAY);
+    Meal* meal1 = new Meal(101, "Kebab", 20000, MealType::LUNCH, ReserveDay::MONDAY);
+    DiningHall* hall1 = new DiningHall(1, "Omid Hall", "Birjand University", 300);
+    Storage::get_instance().add_meal(meal1);
+    Storage::get_instance().add_dining_hall(hall1);
+
     Student student(1, "Ali", "Rezaei", "hashed_pass", "S123", "ali@mail.com", 50000, true);
     Admin admin(2, "Admin", "User", "hashed_admin");
 
-    student.reserve_meal(&lunch, &hall);
+    student.reserve_meal(meal1, hall1);
     student.print();
     admin.print();
 
