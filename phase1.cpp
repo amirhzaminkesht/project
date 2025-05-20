@@ -276,8 +276,7 @@ DiningHall::DiningHall(int id, string n, string a, int c) : hall_id(id), name(n)
 void DiningHall::print() const { cout << "Dining Hall: " << name << " - Capacity: " << capacity << endl; }
 
 Reservation::Reservation(int id, Student *s, DiningHall *h, Meal *m)
-    : reservation_id(id), student(s), dHall(h), meal(m), status(ReservationStatus::SUCCESS),
-      created_at(time(nullptr)) {}
+    : reservation_id(id), student(s), dHall(h), meal(m), status(ReservationStatus::SUCCESS), created_at(time(nullptr)) {}
 
 void Reservation::print() const
 {
