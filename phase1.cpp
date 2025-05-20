@@ -309,6 +309,48 @@ Meal *Reservation::get_meal() const { return meal; }
 time_t Reservation::get_created_at() const { return created_at; }
 ReservationStatus Reservation::get_status() const { return status; }
 
+enum class TransactionType { TRANSFER, PAYMENT };
+enum class TransactionStatus { PENDING, COMPLETED, FAILED };
+
+class Transaction
+{
+    int _transactionID;
+    string _trackingCode;
+    float _amount;
+    TransactionType _type;
+    TransactionStatus _status;
+    time_t _createdAt;
+
+public:
+    Transaction(int id, string track, float amt, TransactionType type, TransactionStatus status)
+        : _transactionID(id), _trackingCode(track), _amount(amt), _type(type), _status(status), _createdAt(time(nullptr)) {}
+
+    int getTransactionID() const { return _transactionID; }
+    string getTrackingCode() const { return _trackingCode; }
+    float getAmount() const { return _amount; }
+    TransactionType getType() const { return _type; }
+    TransactionStatus getStatus() const { return _status; }
+    time_t getCreatedAt() const { return _createdAt; }
+
+    void setTransactionID(int id) { _transactionID = id; }
+    void setTrackingCode(const string &code) { _trackingCode = code; }
+    void setAmount(float amt) { _amount = amt; }
+    void setType(TransactionType t) { _type = t; }
+    void setStatus(TransactionStatus s) { _status = s; }
+
+    void print() const
+    {
+        cout << "Transaction #" << _transactionID << " - Amount: " << _amount << " - Status: ";
+        if (_status == TransactionStatus::PENDING)
+            cout << "PENDING";
+        else if (_status == TransactionStatus::COMPLETED)
+            cout << "COMPLETED";
+        else
+            cout << "FAILED";
+        cout << " - Time: " << ctime(&_createdAt);
+    }
+};
+
 int main()
 {
     return 0;
