@@ -388,6 +388,19 @@ public:
     void logout() override {}
 };
 
+class AdminSession : public SessionBase
+{
+    Admin *_admin;
+
+public:
+    AdminSession(Admin *admin) : _admin(admin) {}
+
+    void load_session() override {}
+    void save_session() override {}
+    void login(string username, string password) override {}
+    void logout() override {}
+};
+
 int main()
 {
     return 0;
