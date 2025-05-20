@@ -169,6 +169,8 @@ class Storage
 {
     vector<Meal *> meals;
     vector<DiningHall *> halls;
+    vector<Student *> students;
+    vector<Admin *> admins;
 
     Storage() {}
 
@@ -187,6 +189,26 @@ public:
     void addDiningHall(DiningHall *hall)
     {
         halls.push_back(hall);
+    }
+
+    void addStudent(Student *student)
+    {
+        students.push_back(student);
+    }
+
+    void addAdmin(Admin *admin)
+    {
+        admins.push_back(admin);
+    }
+
+    vector<Student *> getStudents() const
+    {
+        return students;
+    }
+
+    vector<Admin *> getAdmins() const
+    {
+        return admins;
     }
 };
 
