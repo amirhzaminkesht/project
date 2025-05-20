@@ -7,6 +7,9 @@ using namespace std;
 enum class MealType { BREAKFAST, LUNCH, DINNER };
 enum class ReserveDay { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY };
 enum class ReservationStatus { NOT_PAID, SUCCESS, CANCELLED, FAILED };
+enum class TransactionType { TRANSFER, PAYMENT };
+enum class TransactionStatus { PENDING, COMPLETED, FAILED };
+enum class SessionStatus { AUTHENTICATED, ANONYMOUS };
 
 class Reservation;
 class Meal;
@@ -202,6 +205,69 @@ public:
     }
 };
 
+class Transaction
+{
+    int _transactionID;
+    string _trackingCode;
+    float _amount;
+    TransactionType _type;
+    TransactionStatus _status;
+    time_t _createdAt;
+
+public:
+    Transaction(int id, string track, float amt, TransactionType type, TransactionStatus status)
+        : _transactionID(id), _trackingCode(track), _amount(amt), _type(type), _status(status), _createdAt(time(nullptr)) {}
+
+    int getTransactionID() const { return _transactionID; }
+    string getTrackingCode() const { return _trackingCode; }
+    float getAmount() const { return _amount; }
+    TransactionType getType() const { return _type; }
+    TransactionStatus getStatus() const { return _status; }
+    time_t getCreatedAt() const { return _createdAt; }
+
+    void setTransactionID(int id) { _transactionID = id; }
+    void setTrackingCode(const string &code) { _trackingCode = code; }
+    void setAmount(float amt) { _amount = amt; }
+    void setType(TransactionType t) { _type = t; }
+    void setStatus(TransactionStatus s) { _status = s; }
+
+    void print() const
+    {
+        cout << "Transaction #" << _transactionID << " - Amount: " << _amount << " - Status: ";
+        if (_status == TransactionStatus::PENDING)
+            cout << "PENDING";
+        else if (_status == TransactionStatus::COMPLETED)
+            cout << "COMPLETED";
+        else
+            cout << "FAILED";
+        cout << " - Time: " << ctime(&_createdAt);
+    }
+};
+
+class SessionBase
+{
+protected:
+    time_t _createdAt;
+    time_t _lastLogin;
+    SessionStatus _status;
+
+public:
+    SessionBase() : _createdAt(time(nullptr)), _lastLogin(0), _status(SessionStatus::ANONYMOUS) {}
+
+    virtual void load_session() = 0;
+    virtual void save_session() = 0;
+    virtual void login(string username, string password) = 0;
+    virtual void logout() = 0;
+
+    time_t getCreatedAt() const { return _createdAt; }
+    time_t getLastLogin() const { return _lastLogin; }
+    SessionStatus getStatus() const { return _status; }
+
+    void setCreatedAt(time_t t) { _createdAt = t; }
+    void setLastLogin(time_t t) { _lastLogin = t; }
+    void setStatus(SessionStatus s) { _status = s; }
+};
+
 User::User(int uid, string n, string l, string p) : user_id(uid), name(n), last_name(l), hashed_password(p) {}
 int User::get_user_id() const { return user_id; }
 string User::get_name() const { return name; }
@@ -276,7 +342,8 @@ DiningHall::DiningHall(int id, string n, string a, int c) : hall_id(id), name(n)
 void DiningHall::print() const { cout << "Dining Hall: " << name << " - Capacity: " << capacity << endl; }
 
 Reservation::Reservation(int id, Student *s, DiningHall *h, Meal *m)
-    : reservation_id(id), student(s), dHall(h), meal(m), status(ReservationStatus::SUCCESS), created_at(time(nullptr)) {}
+    : reservation_id(id), student(s), dHall(h), meal(m), status(ReservationStatus::SUCCESS),
+      created_at(time(nullptr)) {}
 
 void Reservation::print() const
 {
@@ -307,74 +374,6 @@ bool Reservation::cancel()
 Meal *Reservation::get_meal() const { return meal; }
 time_t Reservation::get_created_at() const { return created_at; }
 ReservationStatus Reservation::get_status() const { return status; }
-
-enum class TransactionType { TRANSFER, PAYMENT };
-enum class TransactionStatus { PENDING, COMPLETED, FAILED };
-
-class Transaction
-{
-    int _transactionID;
-    string _trackingCode;
-    float _amount;
-    TransactionType _type;
-    TransactionStatus _status;
-    time_t _createdAt;
-
-public:
-    Transaction(int id, string track, float amt, TransactionType type, TransactionStatus status)
-        : _transactionID(id), _trackingCode(track), _amount(amt), _type(type), _status(status), _createdAt(time(nullptr)) {}
-
-    int getTransactionID() const { return _transactionID; }
-    string getTrackingCode() const { return _trackingCode; }
-    float getAmount() const { return _amount; }
-    TransactionType getType() const { return _type; }
-    TransactionStatus getStatus() const { return _status; }
-    time_t getCreatedAt() const { return _createdAt; }
-
-    void setTransactionID(int id) { _transactionID = id; }
-    void setTrackingCode(const string &code) { _trackingCode = code; }
-    void setAmount(float amt) { _amount = amt; }
-    void setType(TransactionType t) { _type = t; }
-    void setStatus(TransactionStatus s) { _status = s; }
-
-    void print() const
-    {
-        cout << "Transaction #" << _transactionID << " - Amount: " << _amount << " - Status: ";
-        if (_status == TransactionStatus::PENDING)
-            cout << "PENDING";
-        else if (_status == TransactionStatus::COMPLETED)
-            cout << "COMPLETED";
-        else
-            cout << "FAILED";
-        cout << " - Time: " << ctime(&_createdAt);
-    }
-};
-
-enum class SessionStatus { AUTHENTICATED, ANONYMOUS };
-
-class SessionBase
-{
-protected:
-    time_t _createdAt;
-    time_t _lastLogin;
-    SessionStatus _status;
-
-public:
-    SessionBase() : _createdAt(time(nullptr)), _lastLogin(0), _status(SessionStatus::ANONYMOUS) {}
-
-    virtual void load_session() = 0;
-    virtual void save_session() = 0;
-    virtual void login(string username, string password) = 0;
-    virtual void logout() = 0;
-
-    time_t getCreatedAt() const { return _createdAt; }
-    time_t getLastLogin() const { return _lastLogin; }
-    SessionStatus getStatus() const { return _status; }
-
-    void setCreatedAt(time_t t) { _createdAt = t; }
-    void setLastLogin(time_t t) { _lastLogin = t; }
-    void setStatus(SessionStatus s) { _status = s; }
-};
 
 int main()
 {
