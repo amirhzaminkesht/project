@@ -6,7 +6,7 @@ using namespace std;
 
 enum class MealType { BREAKFAST, LUNCH, DINNER };
 enum class ReserveDay { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY };
-enum class ReservationStatus { SUCCESS, CANCELLED, FAILED };
+enum class ReservationStatus { NOT_PAID, SUCCESS, CANCELLED, FAILED };
 
 class Reservation;
 class Meal;
@@ -109,6 +109,59 @@ public:
     ReservationStatus get_status() const;
 };
 
+class ShoppingCart
+{
+    vector<Reservation *> _reservations;
+
+public:
+    void addReservation(Reservation *reservation)
+    {
+        if (reservation)
+            _reservations.push_back(reservation);
+    }
+
+    void removeReservation(int ID)
+    {
+        for (auto it = _reservations.begin(); it != _reservations.end(); ++it)
+        {
+            if ((*it)->get_status() == ReservationStatus::NOT_PAID &&
+                (*it)->get_created_at() == ID)
+            {
+                _reservations.erase(it);
+                cout << "Reservation removed from shopping cart." << endl;
+                return;
+            }
+        }
+        cout << "Reservation not found in shopping cart." << endl;
+    }
+
+    void viewShoppingCartItems() const
+    {
+        if (_reservations.empty())
+        {
+            cout << "Shopping cart is empty." << endl;
+            return;
+        }
+
+        for (const auto &res : _reservations)
+        {
+            if (res && res->get_status() == ReservationStatus::NOT_PAID)
+                res->print();
+        }
+    }
+
+    void clear()
+    {
+        _reservations.clear();
+        cout << "Shopping cart cleared." << endl;
+    }
+
+    vector<Reservation *> getReservations() const
+    {
+        return _reservations;
+    }
+};
+
 class Storage
 {
     vector<Meal *> meals;
@@ -139,7 +192,7 @@ class Panel
 public:
     void showMenu()
     {
-        cout << "1. View Reservations\n2. Reserve Meal\n3. Cancel Reservation\n";
+        cout << "1. View Reservations\\n2. Reserve Meal\\n3. Cancel Reservation" << endl;
     }
 
     void viewReservations(Student &student)
@@ -148,8 +201,6 @@ public:
             res->print();
     }
 };
-
-// ---------------- Implementations ---------------- //
 
 User::User(int uid, string n, string l, string p) : user_id(uid), name(n), last_name(l), hashed_password(p) {}
 int User::get_user_id() const { return user_id; }
@@ -183,27 +234,28 @@ void Student::reserve_meal(Meal *meal, DiningHall *hall)
     {
         time_t res_time = res->get_created_at();
         tm *res_tm = localtime(&res_time);
-        tm *now_tm = localtime(&(time_t){time(nullptr)});
+        time_t now = time(nullptr);
+        tm *now_tm = localtime(&now);
         if (res_tm->tm_year == now_tm->tm_year &&
             res_tm->tm_mon == now_tm->tm_mon &&
             res_tm->tm_mday == now_tm->tm_mday &&
             res->get_meal()->get_meal_type() == meal->get_meal_type())
         {
-            cout << "Meal already reserved today.\n";
+            cout << "Meal already reserved today." << endl;
             return;
         }
     }
 
     if (balance < meal->get_price())
     {
-        cout << "Insufficient balance.\n";
+        cout << "Insufficient balance." << endl;
         return;
     }
 
     balance -= meal->get_price();
     Reservation *r = new Reservation(reserves.size() + 1, this, hall, meal);
     reserves.push_back(r);
-    cout << "Reservation successful.\n";
+    cout << "Reservation successful." << endl;
     r->print();
 }
 
@@ -234,8 +286,10 @@ void Reservation::print() const
         cout << "SUCCESS";
     else if (status == ReservationStatus::CANCELLED)
         cout << "CANCELLED";
-    else
+    else if (status == ReservationStatus::FAILED)
         cout << "FAILED";
+    else
+        cout << "NOT_PAID";
     cout << " - Time: " << ctime(&created_at);
 }
 
@@ -243,11 +297,11 @@ bool Reservation::cancel()
 {
     if (status == ReservationStatus::CANCELLED)
     {
-        cout << "Already cancelled.\n";
+        cout << "Already cancelled." << endl;
         return false;
     }
     status = ReservationStatus::CANCELLED;
-    cout << "Cancelled successfully.\n";
+    cout << "Cancelled successfully." << endl;
     return true;
 }
 
@@ -255,30 +309,7 @@ Meal *Reservation::get_meal() const { return meal; }
 time_t Reservation::get_created_at() const { return created_at; }
 ReservationStatus Reservation::get_status() const { return status; }
 
-// ---------------- Main Function ---------------- //
-
 int main()
 {
-    Panel panel;
-    panel.showMenu();
-
-    DiningHall *hall = new DiningHall(1, "Omid", "Birjand", 400);
-    Meal *meal = new Meal(1, "Kebab", 20000, MealType::LUNCH, ReserveDay::MONDAY);
-
-    Storage::getInstance().addDiningHall(hall);
-    Storage::getInstance().addMeal(meal);
-
-    Student student(1, "Behtash", "Rahimi", "hashed", "S101", "b@example.com", "0912", 30000);
-    student.print();
-
-    student.reserve_meal(meal, hall);
-    panel.viewReservations(student);
-
-    if (!student.get_reserves().empty())
-    {
-        student.get_reserves()[0]->cancel();
-        student.get_reserves()[0]->print();
-    }
-
     return 0;
 }
