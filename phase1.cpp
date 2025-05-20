@@ -192,7 +192,7 @@ class Panel
 public:
     void showMenu()
     {
-        cout << "1. View Reservations\\n2. Reserve Meal\\n3. Cancel Reservation" << endl;
+        cout << "1. View Reservations\n2. Reserve Meal\n3. Cancel Reservation" << endl;
     }
 
     void viewReservations(Student &student)
@@ -349,6 +349,32 @@ public:
             cout << "FAILED";
         cout << " - Time: " << ctime(&_createdAt);
     }
+};
+
+enum class SessionStatus { AUTHENTICATED, ANONYMOUS };
+
+class SessionBase
+{
+protected:
+    time_t _createdAt;
+    time_t _lastLogin;
+    SessionStatus _status;
+
+public:
+    SessionBase() : _createdAt(time(nullptr)), _lastLogin(0), _status(SessionStatus::ANONYMOUS) {}
+
+    virtual void load_session() = 0;
+    virtual void save_session() = 0;
+    virtual void login(string username, string password) = 0;
+    virtual void logout() = 0;
+
+    time_t getCreatedAt() const { return _createdAt; }
+    time_t getLastLogin() const { return _lastLogin; }
+    SessionStatus getStatus() const { return _status; }
+
+    void setCreatedAt(time_t t) { _createdAt = t; }
+    void setLastLogin(time_t t) { _lastLogin = t; }
+    void setStatus(SessionStatus s) { _status = s; }
 };
 
 int main()
