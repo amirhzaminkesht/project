@@ -465,6 +465,69 @@ public:
     }
 };
 
+class PaymentProcessor
+{
+    TransactionManager &_txnManager;
+
+public:
+    PaymentProcessor(TransactionManager &manager) : _txnManager(manager) {}
+
+    void processCart(Student *student, ShoppingCart &cart)
+    {
+        if (!student)
+        {
+            cout << "Invalid student." << endl;
+            return;
+        }
+
+        vector<Reservation *> reservations = cart.getReservations();
+        if (reservations.empty())
+        {
+            cout << "Shopping cart is empty." << endl;
+            return;
+        }
+
+        float total = 0;
+        for (auto r : reservations)
+        {
+            if (r && r->get_status() == ReservationStatus::NOT_PAID)
+                total += r->get_meal()->get_price();
+        }
+
+        if (student->get_balance() < total)
+        {
+            cout << "Insufficient balance to process all reservations." << endl;
+            return;
+        }
+
+        for (auto r : reservations)
+        {
+            if (!r || r->get_status() != ReservationStatus::NOT_PAID)
+                continue;
+
+            float price = r->get_meal()->get_price();
+
+            student->deactivate();
+            float new_balance = student->get_balance() - price;
+            student->activate();
+
+            Transaction *txn = new Transaction(
+                _txnManager.getAllTransactions().size() + 1,
+                "TRX" + to_string(time(nullptr)),
+                price,
+                TransactionType::PAYMENT,
+                TransactionStatus::COMPLETED);
+
+            _txnManager.addTransaction(txn);
+
+            cout << "Payment successful for reservation." << endl;
+            txn->print();
+        }
+
+        cart.clear();
+    }
+};
+
 int main()
 {
     return 0;
