@@ -423,6 +423,48 @@ public:
     void logout() override {}
 };
 
+class TransactionManager
+{
+    vector<Transaction *> _transactions;
+
+public:
+    void addTransaction(Transaction *transaction)
+    {
+        if (transaction)
+            _transactions.push_back(transaction);
+    }
+
+    void viewAllTransactions() const
+    {
+        if (_transactions.empty())
+        {
+            cout << "No transactions found." << endl;
+            return;
+        }
+
+        for (const auto &txn : _transactions)
+        {
+            if (txn)
+                txn->print();
+        }
+    }
+
+    Transaction *findTransactionByID(int id) const
+    {
+        for (const auto &txn : _transactions)
+        {
+            if (txn && txn->getTransactionID() == id)
+                return txn;
+        }
+        return nullptr;
+    }
+
+    vector<Transaction *> getAllTransactions() const
+    {
+        return _transactions;
+    }
+};
+
 int main()
 {
     return 0;
